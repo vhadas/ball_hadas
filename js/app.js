@@ -6,6 +6,8 @@ var GAMER = 'GAMER';
 var GAMER_IMG = '<img src="img/gamer.png" />';
 var BALL_IMG = '<img src="img/ball.png" />';
 
+var cnt = 2;
+var cntBall = 0;
 var gBoard;
 var gGamerPos;
 function initGame() {
@@ -13,6 +15,16 @@ function initGame() {
 	gBoard = buildBoard();
 	renderBoard(gBoard);
 }
+
+var add_ball = setInterval(() => {
+	do {
+		var i = Math.floor(Math.random() * 8);
+		var j = Math.floor(Math.random() * 12);
+	} while (gBoard[i][j].gameElement != null || gBoard[i][j].type == WALL)
+	gBoard[i][j].gameElement = BALL;
+	renderCell({ i, j }, BALL_IMG);
+	++cnt;
+}, "5000");
 
 
 function buildBoard() {
@@ -32,7 +44,14 @@ function buildBoard() {
 			// Place Walls at edges
 			if (i === 0 || i === board.length - 1 || j === 0 || j === board[0].length - 1) {
 				cell.type = WALL;
+
+				//Passages in the walls
+				if (j === 5) {
+					cell.type = FLOOR;
+				}
 			}
+
+
 
 			// Add created cell to The game board
 			board[i][j] = cell;
@@ -46,9 +65,15 @@ function buildBoard() {
 	board[3][8].gameElement = BALL;
 	board[7][4].gameElement = BALL;
 
+
+
 	console.log(board);
 	return board;
+
+
 }
+
+
 
 // Render the board to an HTML table
 function renderBoard(board) {
@@ -84,6 +109,9 @@ function renderBoard(board) {
 	console.log(strHTML);
 	var elBoard = document.querySelector('.board');
 	elBoard.innerHTML = strHTML;
+
+
+
 }
 
 // Move the player to a specific location
@@ -97,10 +125,19 @@ function moveTo(i, j) {
 	var jAbsDiff = Math.abs(j - gGamerPos.j);
 
 	// If the clicked Cell is one of the four allowed
+
+
 	if ((iAbsDiff === 1 && jAbsDiff === 0) || (jAbsDiff === 1 && iAbsDiff === 0)) {
 
 		if (targetCell.gameElement === BALL) {
 			console.log('Collecting!');
+			document.getElementById("count_ball").innerHTML = ++cntBall;
+			if (cnt == cntBall) {
+				alert("you winn")
+				clearInterval(add_ball)
+				document.getElementById('count_ball').innerHTML = `<button onclick="initGame()">ristart</button>`;
+			}
+
 		}
 
 		// MOVING from current position
@@ -118,6 +155,7 @@ function moveTo(i, j) {
 		renderCell(gGamerPos, GAMER_IMG);
 
 	} // else console.log('TOO FAR', iAbsDiff, jAbsDiff);
+
 
 }
 
